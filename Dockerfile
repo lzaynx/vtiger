@@ -1,11 +1,12 @@
 FROM php:7.3-apache
 
-# 使用正确的 Debian Buster archive 源，防止过期
+# 使用 Debian Buster archive 源
 RUN echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99disable-check-valid-until \
  && echo 'deb http://archive.debian.org/debian buster main contrib non-free' > /etc/apt/sources.list \
- && echo 'deb http://archive.debian.org/debian buster-updates main contrib non-free' >> /etc/apt/sources.list
+ && echo 'deb http://archive.debian.org/debian buster-updates main contrib non-free' >> /etc/apt/sources.list \
+ && echo 'deb http://archive.debian.org/debian-security buster/updates main contrib non-free' >> /etc/apt/sources.list
 
-# 安装 PHP 扩展，并使用 BuildKit 缓存 APT 下载的包以加快构建速度
+# 安装 PHP 扩展
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
     apt-get update -o Acquire::Check-Valid-Until=false \
@@ -19,8 +20,5 @@ RUN --mount=type=cache,target=/var/cache/apt \
 # 启用 Apache Rewrite
 RUN a2enmod rewrite
 
-# 设置工作目录
 WORKDIR /var/www/html
-
-# 复制 vtiger 项目
 COPY . .
