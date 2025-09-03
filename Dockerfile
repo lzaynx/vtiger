@@ -4,7 +4,9 @@ FROM php:7.3-apache
 # 设置 Debian Buster archive 源，禁用有效期检查
 RUN echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99disable-check-valid-until \
  && sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list \
- && sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list
+ && sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security/|g' /etc/apt/sources.list \
+ && sed -i 's| bullseye/updates| buster/updates|g' /etc/apt/sources.list \
+ && sed -i 's| bullseye-security| buster/updates|g' /etc/apt/sources.list
 
 # 安装 PHP 扩展及工具
 RUN apt-get update -o Acquire::Check-Valid-Until=false \
