@@ -5,8 +5,10 @@ RUN echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99disable-c
  && echo 'deb http://archive.debian.org/debian buster main contrib non-free' > /etc/apt/sources.list \
  && echo 'deb http://archive.debian.org/debian buster-updates main contrib non-free' >> /etc/apt/sources.list
 
-# 安装 PHP 扩展
-RUN apt-get update -o Acquire::Check-Valid-Until=false \
+# 安装 PHP 扩展，并使用 BuildKit 缓存 APT 下载的包以加快构建速度
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt \
+    apt-get update -o Acquire::Check-Valid-Until=false \
  && apt-get install -y --no-install-recommends \
       libpng-dev libjpeg-dev libfreetype6-dev libzip-dev libxml2-dev libicu-dev \
       libcurl4-openssl-dev libonig-dev libldap2-dev libxslt1-dev \
