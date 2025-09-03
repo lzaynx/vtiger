@@ -1,8 +1,13 @@
-# 使用官方 PHP 7.3 + Apache Buster 镜像，依赖版本稳定
-FROM php:7.3-apache-buster
+# 使用 PHP 7.3 Apache 官方镜像
+FROM php:7.3-apache
 
-# 安装必要的 PHP 扩展和工具
-RUN apt-get update \
+# 设置 Debian Buster archive 源，禁用有效期检查
+RUN echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99disable-check-valid-until \
+ && sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list \
+ && sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list
+
+# 安装 PHP 扩展及工具
+RUN apt-get update -o Acquire::Check-Valid-Until=false \
  && apt-get install -y --no-install-recommends \
       libpng-dev \
       libjpeg-dev \
@@ -18,11 +23,10 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-# 启用 Apache 重写模块
+# 启用 Apache rewrite
 RUN a2enmod rewrite
 
-# 复制 vtiger 项目到 Apache 的根目录
+# 复制 vtiger 项目
 COPY . /var/www/html/
 
-# 设置工作目录
 WORKDIR /var/www/html
