@@ -1,14 +1,13 @@
-# 使用 PHP 7.3 Apache 官方镜像
+# 使用官方 PHP 7.3 Apache 镜像
 FROM php:7.3-apache
 
 # 设置 Debian Buster archive 源，禁用有效期检查
 RUN echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99disable-check-valid-until \
  && sed -i 's|http://deb.debian.org/debian|http://archive.debian.org/debian|g' /etc/apt/sources.list \
- && sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security/|g' /etc/apt/sources.list \
- && sed -i 's| bullseye/updates| buster/updates|g' /etc/apt/sources.list \
- && sed -i 's| bullseye-security| buster/updates|g' /etc/apt/sources.list
+ && sed -i 's|http://security.debian.org/debian-security|http://archive.debian.org/debian-security|g' /etc/apt/sources.list \
+ && echo 'Acquire::Check-Valid-Until "false";' >> /etc/apt/apt.conf.d/99disable-check-valid-until
 
-# 安装 PHP 扩展及工具
+# 安装必要工具和 PHP 扩展
 RUN apt-get update -o Acquire::Check-Valid-Until=false \
  && apt-get install -y --no-install-recommends \
       libpng-dev \
@@ -25,7 +24,7 @@ RUN apt-get update -o Acquire::Check-Valid-Until=false \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-# 启用 Apache rewrite
+# 启用 Apache 重写模块
 RUN a2enmod rewrite
 
 # 复制 vtiger 项目
