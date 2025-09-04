@@ -23,3 +23,6 @@ RUN a2enmod rewrite
 COPY . /var/www/html/
 
 WORKDIR /var/www/html
+
+# 调整权限给 Apache 用户
+RUN chown -R www-data:www-data /var/www/html
